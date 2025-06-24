@@ -5,14 +5,17 @@ import pandas as pd
 def load_data():
     df = pd.read_csv("naivebayes_classification_results_fixed.csv")
 
-    # Mapping label ke bahasa Indonesia dan konsisten
+    # Mapping label ke bahasa Indonesia.
+    # 'Neutral' sekarang akan dipetakan ke 'netral' yang terpisah.
     label_mapping = {
         'Positive': 'positif',
         'Negative': 'negatif',
-        'Neutral': 'positif'  # jika ada label 'Neutral' di masa depan
+        'Neutral': 'netral'
     }
 
-    df['label'] = df['naivebayes_label'].map(label_mapping).fillna('positif')
+    # Menerapkan mapping dan menggunakan 'tidak diketahui' sebagai fallback
+    # jika ada label yang tidak cocok dalam mapping.
+    df['label'] = df['naivebayes_label'].map(label_mapping).fillna('tidak diketahui')
     return df
 
 # Load data
@@ -20,10 +23,10 @@ df = load_data()
 
 # Judul halaman
 st.title("🎬 Analisis Sentimen Film Jumbo")
-st.write("Analisis berdasarkan hasil klasifikasi Naive Bayes. Semua sentimen *netral* dianggap **positif**.")
+st.write("Analisis berdasarkan hasil klasifikasi Naive Bayes. Sentimen *netral* sekarang ditampilkan sebagai kategori terpisah.")
 
-# Pilihan filter
-sentiment = st.radio("Pilih Sentimen:", ['positif', 'negatif'])
+# Pilihan filter sentimen, sekarang mencakup 'netral'
+sentiment = st.radio("Pilih Sentimen:", ['positif', 'negatif', 'netral'])
 
 # Filter sesuai pilihan
 filtered = df[df['label'] == sentiment]
