@@ -1,34 +1,34 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Filter Komentar", layout="centered")
-st.title("🎭 Filter Komentar berdasarkan Sentimen")
-
 # Load data
-df = pd.read_csv("StemmingJumbo.csv")
+@st.cache_data
+def load_data():
+    return pd.read_csv("data_preprocessed.csv")
 
-# DEBUG: tampilkan semua kolom
-st.write("Kolom yang tersedia di CSV:")
-st.write(df.columns.tolist())
+df = load_data()
 
-# Gunakan kolom yang benar untuk analisis sentimen
-# Misalnya kamu ingin pakai kolom 'Stemming'
-def simple_sentiment(text):
-    positive_keywords = ['bagus', 'menarik', 'keren', 'lucu', 'hebat', 'baik']
-    negative_keywords = ['jelek', 'buruk', 'bosan', 'gagal', 'kurang', 'tidak']
-    text = str(text).lower()
-    if any(word in text for word in positive_keywords):
-        return 'positif'
-    elif any(word in text for word in negative_keywords):
-        return 'negatif'
-    else:
-        return 'netral'
+# Judul
+st.title("📽️ Analisis Sentimen Film Jumbo")
+st.write("Aplikasi ini memfilter review berdasarkan hasil sentimen: positif, netral, atau negatif.")
 
-df['label'] = df['Stemming'].apply(simple_sentiment)
+# Pratinjau data
+st.subheader("Pratinjau Dataset")
+st.dataframe(df.head())
 
-sentimen = st.selectbox("Pilih jenis sentimen yang ingin ditampilkan:", ['positif', 'negatif', 'netral'])
+# Cek apakah kolom label tersedia
+if 'label' not in df.columns:
+    st.error("Kolom 'label' tidak ditemukan dalam dataset. Pastikan file CSV memiliki kolom ini.")
+else:
+    # Filter berdasarkan label
+    option = st.radio("Pilih kategori sentimen:", ['positif', 'netral', 'negatif'])
 
-filtered_df = df[df['label'] == sentimen]
+    filtered_df = df[df['label'].str.lower() == option.lower()]
 
-st.write(f"Menampilkan {len(filtered_df)} komentar dengan sentimen **{sentimen}**:")
-st.dataframe(filtered_df[['Stemming']].reset_index(drop=True))
+    st.subheader(f"Hasil Sentimen: {option.capitalize()}")
+    st.write(f"Jumlah data: {filtered_df.shape[0]}")
+    st.dataframe(filtered_df)
+
+    # Statistik total sentimen
+    st.subheader("Statistik Keseluruhan Sentimen")
+    st.bar_chart(df['label'].value_counts())
