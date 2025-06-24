@@ -3,39 +3,38 @@ import pandas as pd
 
 @st.cache_data
 def load_data():
+    # Baca file CSV hasil klasifikasi Naive Bayes
     df = pd.read_csv("naivebayes_classification_results_fixed.csv")
 
-    # Mapping label ke bahasa Indonesia.
-    # 'Neutral' sekarang akan dipetakan ke 'netral' yang terpisah.
+    # Pemetaan label bahasa Inggris → Indonesia
     label_mapping = {
         'Positive': 'positif',
         'Negative': 'negatif',
-        'Neutral': 'netral'
+        'Neutral': 'positif'  # jika ada netral, anggap positif
     }
 
-    # Menerapkan mapping dan menggunakan 'tidak diketahui' sebagai fallback
-    # jika ada label yang tidak cocok dalam mapping.
-    df['label'] = df['naivebayes_label'].map(label_mapping).fillna('tidak diketahui')
+    # Buat kolom label dalam bahasa Indonesia
+    df['label'] = df['naivebayes_label'].map(label_mapping).fillna('positif')
     return df
 
 # Load data
 df = load_data()
 
-# Judul halaman
+# Judul aplikasi
 st.title("🎬 Analisis Sentimen Film Jumbo")
-st.write("Analisis berdasarkan hasil klasifikasi Naive Bayes. Sentimen *netral* sekarang ditampilkan sebagai kategori terpisah.")
+st.write("Dataset ini memuat hasil klasifikasi sentimen dari ulasan film. Sentimen *netral* dianggap sebagai **positif**.")
 
-# Pilihan filter sentimen, sekarang mencakup 'netral'
-sentiment = st.radio("Pilih Sentimen:", ['positif', 'negatif', 'netral'])
+# Pilih sentimen
+sentiment = st.radio("Pilih Sentimen yang Ingin Ditampilkan:", ['positif', 'negatif'])
 
-# Filter sesuai pilihan
-filtered = df[df['label'] == sentiment]
+# Filter data
+filtered_df = df[df['label'] == sentiment]
 
-# Tampilkan hasil
-st.subheader(f"Hasil Sentimen: {sentiment.capitalize()}")
-st.write(f"Jumlah data: {filtered.shape[0]}")
-st.dataframe(filtered[['normalized_text', 'label']])
+# Tampilkan data
+st.subheader(f"📄 Data Sentimen: {sentiment.capitalize()}")
+st.write(f"Jumlah data: {filtered_df.shape[0]}")
+st.dataframe(filtered_df[['normalized_text', 'label']])
 
 # Visualisasi
-st.subheader("📊 Statistik Sentimen")
+st.subheader("📊 Distribusi Sentimen")
 st.bar_chart(df['label'].value_counts())
