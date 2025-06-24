@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 
-# GUNAKAN RAW URL DARI GITHUB
-CSV_URL = "https://raw.githubusercontent.com/bagusrizkiananda/jumbo/main/StemmingJumbo.csv"
+# URL RAW yang benar (huruf kecil semua)
+CSV_URL = "https://raw.githubusercontent.com/bagusrizkiananda/jumbo/main/stemmingjumbo.csv"
 
 st.set_page_config(page_title="Filter Sentimen", layout="wide")
 st.title("Analisis Sentimen - Filter Tweet")
@@ -19,10 +19,8 @@ def load_data():
 df = load_data()
 
 if df is not None:
-    # Periksa apakah kolom yang diperlukan ada
     required_cols = {'Tweet', 'Label'}
     if required_cols.issubset(df.columns):
-        # Sidebar filter
         st.sidebar.header("Filter Sentimen")
         options = st.sidebar.multiselect(
             "Pilih label sentimen:",
@@ -30,7 +28,6 @@ if df is not None:
             default=sorted(df['Label'].unique())
         )
 
-        # Filter data
         filtered_df = df[df['Label'].isin(options)]
 
         st.write(f"Menampilkan {len(filtered_df)} data dengan label: {', '.join(options)}")
