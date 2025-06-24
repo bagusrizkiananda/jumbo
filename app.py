@@ -3,7 +3,7 @@ import pandas as pd
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("naivebayes_classification_results.csv")
+    df = pd.read_csv("naivebayes_classification_results_fixed.csv")
 
     # Mapping label ke bahasa Indonesia dan konsisten
     label_mapping = {
