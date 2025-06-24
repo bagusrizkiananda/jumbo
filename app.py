@@ -1,40 +1,29 @@
 import streamlit as st
 import pandas as pd
 
-# Fungsi untuk memberi label sentimen berdasarkan kata kunci
-def get_sentiment(text):
-    text = str(text).lower()
-    positif_keywords = ['bagus', 'suka', 'keren', 'menarik', 'hebat', 'luar biasa']
-    negatif_keywords = ['jelek', 'buruk', 'bosan', 'gagal', 'tidak suka', 'parah']
-
-    if any(word in text for word in positif_keywords):
-        return 'positif'
-    elif any(word in text for word in negatif_keywords):
-        return 'negatif'
-    else:
-        return 'netral'
-
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data_preprocessed.csv")
-    if 'normalized_text' in df.columns:
-        df['label'] = df['normalized_text'].apply(get_sentiment)
-    elif 'full_text' in df.columns:
-        df['label'] = df['full_text'].apply(get_sentiment)
+    df = pd.read_csv("naivebayes_classification_results.csv")
+    
+    # Pastikan kolom label tersedia
+    if 'naivebayes_label' in df.columns:
+        # Ubah semua label netral menjadi positif
+        df['label'] = df['naivebayes_label'].replace('netral', 'positif')
     else:
-        df['label'] = 'netral'
+        df['label'] = 'positif'  # fallback
     return df
 
 df = load_data()
 
-# Judul
+# Judul Aplikasi
 st.title("🎬 Analisis Sentimen Film Jumbo")
-st.write("Analisis otomatis terhadap sentimen review film berdasarkan teks.")
+st.write("Analisis menggunakan hasil klasifikasi Naive Bayes. Semua sentimen netral dianggap positif.")
 
-# Pilihan sentimen
-sentiment = st.radio("Pilih Sentimen:", ['positif', 'netral', 'negatif'])
+# Pilihan Sentimen
+sentiment = st.radio("Pilih Sentimen:", ['positif', 'negatif'])
 
+# Filter data
 filtered = df[df['label'] == sentiment]
 
 st.subheader(f"Hasil Sentimen: {sentiment.capitalize()}")
