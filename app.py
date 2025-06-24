@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 
-# GANTI dengan URL CSV dari GitHub kamu
-CSV_URL = "https://raw.githubusercontent.com/bagusrizkiananda/jumbo/refs/heads/main/StemmingJumbo.csv"
+# GUNAKAN RAW URL DARI GITHUB
+CSV_URL = "https://raw.githubusercontent.com/bagusrizkiananda/jumbo/main/StemmingJumbo.csv"
 
 st.set_page_config(page_title="Filter Sentimen", layout="wide")
 st.title("Analisis Sentimen - Filter Tweet")
