@@ -5,7 +5,7 @@ st.set_page_config(page_title="Filter Komentar", layout="centered")
 st.title("🎭 Filter Komentar berdasarkan Sentimen")
 
 # Load data
-df = pd.read_csv("stemmingjumbo.csv")
+df = pd.read_csv("StemmingJumbo.csv")
 
 # DEBUG: tampilkan semua kolom
 st.write("Kolom yang tersedia di CSV:")
