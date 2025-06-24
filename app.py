@@ -1,34 +1,46 @@
 import streamlit as st
 import pandas as pd
 
+# Fungsi untuk memberi label sentimen berdasarkan kata kunci
+def get_sentiment(text):
+    text = str(text).lower()
+    positif_keywords = ['bagus', 'suka', 'keren', 'menarik', 'hebat', 'luar biasa']
+    negatif_keywords = ['jelek', 'buruk', 'bosan', 'gagal', 'tidak suka', 'parah']
+
+    if any(word in text for word in positif_keywords):
+        return 'positif'
+    elif any(word in text for word in negatif_keywords):
+        return 'negatif'
+    else:
+        return 'netral'
+
 # Load data
 @st.cache_data
 def load_data():
-    return pd.read_csv("data_preprocessed.csv")
+    df = pd.read_csv("data_preprocessed.csv")
+    if 'normalized_text' in df.columns:
+        df['label'] = df['normalized_text'].apply(get_sentiment)
+    elif 'full_text' in df.columns:
+        df['label'] = df['full_text'].apply(get_sentiment)
+    else:
+        df['label'] = 'netral'
+    return df
 
 df = load_data()
 
 # Judul
-st.title("📽️ Analisis Sentimen Film Jumbo")
-st.write("Aplikasi ini memfilter review berdasarkan hasil sentimen: positif, netral, atau negatif.")
+st.title("🎬 Analisis Sentimen Film Jumbo")
+st.write("Analisis otomatis terhadap sentimen review film berdasarkan teks.")
 
-# Pratinjau data
-st.subheader("Pratinjau Dataset")
-st.dataframe(df.head())
+# Pilihan sentimen
+sentiment = st.radio("Pilih Sentimen:", ['positif', 'netral', 'negatif'])
 
-# Cek apakah kolom label tersedia
-if 'label' not in df.columns:
-    st.error("Kolom 'label' tidak ditemukan dalam dataset. Pastikan file CSV memiliki kolom ini.")
-else:
-    # Filter berdasarkan label
-    option = st.radio("Pilih kategori sentimen:", ['positif', 'netral', 'negatif'])
+filtered = df[df['label'] == sentiment]
 
-    filtered_df = df[df['label'].str.lower() == option.lower()]
+st.subheader(f"Hasil Sentimen: {sentiment.capitalize()}")
+st.write(f"Jumlah data: {filtered.shape[0]}")
+st.dataframe(filtered[['normalized_text', 'label']])
 
-    st.subheader(f"Hasil Sentimen: {option.capitalize()}")
-    st.write(f"Jumlah data: {filtered_df.shape[0]}")
-    st.dataframe(filtered_df)
-
-    # Statistik total sentimen
-    st.subheader("Statistik Keseluruhan Sentimen")
-    st.bar_chart(df['label'].value_counts())
+# Statistik
+st.subheader("Statistik Sentimen")
+st.bar_chart(df['label'].value_counts())
