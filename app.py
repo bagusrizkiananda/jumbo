@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Load data lokal (ganti nama file sesuai kebutuhan)
-df = pd.read_csv("stemmingjumbo.csv")
+df = pd.read_csv("StemmingJumbo.csv")
 
 # Fungsi labeling sederhana berbasis keyword
 def simple_sentiment(text):
