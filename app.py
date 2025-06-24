@@ -1,10 +1,18 @@
 import streamlit as st
 import pandas as pd
 
-# Load data lokal (ganti nama file sesuai kebutuhan)
-df = pd.read_csv("StemmingJumbo.csv")
+st.set_page_config(page_title="Filter Komentar", layout="centered")
+st.title("🎭 Filter Komentar berdasarkan Sentimen")
 
-# Fungsi labeling sederhana berbasis keyword
+# Load data
+df = pd.read_csv("stemmingjumbo.csv")
+
+# DEBUG: tampilkan semua kolom
+st.write("Kolom yang tersedia di CSV:")
+st.write(df.columns.tolist())
+
+# Gunakan kolom yang benar untuk analisis sentimen
+# Misalnya kamu ingin pakai kolom 'Stemming'
 def simple_sentiment(text):
     positive_keywords = ['bagus', 'menarik', 'keren', 'lucu', 'hebat', 'baik']
     negative_keywords = ['jelek', 'buruk', 'bosan', 'gagal', 'kurang', 'tidak']
@@ -16,19 +24,11 @@ def simple_sentiment(text):
     else:
         return 'netral'
 
-# Terapkan labeling ke kolom Tweet
-df['label'] = df['Tweet'].apply(simple_sentiment)
+df['label'] = df['Stemming'].apply(simple_sentiment)
 
-# UI Streamlit
-st.set_page_config(page_title="Filter Komentar", layout="centered")
-st.title("🎭 Filter Komentar berdasarkan Sentimen")
-
-# Pilihan label
 sentimen = st.selectbox("Pilih jenis sentimen yang ingin ditampilkan:", ['positif', 'negatif', 'netral'])
 
-# Filter data sesuai pilihan
 filtered_df = df[df['label'] == sentimen]
 
-# Tampilkan hasil
 st.write(f"Menampilkan {len(filtered_df)} komentar dengan sentimen **{sentimen}**:")
-st.dataframe(filtered_df[['Tweet']].reset_index(drop=True))
+st.dataframe(filtered_df[['Stemming']].reset_index(drop=True))
